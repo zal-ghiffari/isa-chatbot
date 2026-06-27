@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% block title %}Hasil Assessment{% endblock %}
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-6 px-4">
+    <div class="max-w-lg mx-auto" id="app">
+        <!-- Loading -->
+        <div id="loadingScreen" class="text-center py-20">
+            <svg class="animate-spin h-10 w-10 text-blue-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
+            <p class="text-gray-500">Memuat hasil assessment...</p>
+        </div>
+
+        <!-- Result Content -->
+        <div id="resultContent" class="hidden space-y-6">
+            <!-- Header -->
+            <div class="text-center">
+                <h1 class="text-2xl font-bold text-gray-800">🎉 Hasil Assessment</h1>
+                <p class="text-gray-500 text-sm mt-1">Survey Kesadaran Digital</p>
+            </div>
+
+            <!-- Grade Badge -->
+            <div class="grade-badge text-white rounded-2xl p-6 text-center shadow-xl" id="gradeCard">
+                <p class="text-blue-200 text-xs uppercase tracking-wider mb-1">Grade Anda</p>
+                <div class="text-6xl font-black mb-1" id="gradeDisplay">-</div>
+                <p class="text-lg font-semibold" id="gradeLabel">-</p>
+                <div class="mt-3 flex justify-center items-baseline gap-1">
+                    <span class="text-3xl font-bold" id="scoreDisplay">-</span>
+                    <span class="text-blue-200">/ 100</span>
+                </div>
+            </div>
+
+            <!-- Score Breakdown -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm">
+                <h3 class="font-semibold text-gray-800 mb-4">📊 Rincian Skor per Topik</h3>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="font-medium text-gray-700">🔒 Rekayasa Sosial</span>
+                            <span class="text-gray-600" id="seScore">-</span>
+                        </div>
+                        <div class="h-3 bg-gray-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-500 rounded-full transition-all duration-1000" id="seBar" style="width:0%"></div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Rata-rata: <span id="seAvg">-</span> / 4</p>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="font-medium text-gray-700">📱 Dampak Konten Negatif</span>
+                            <span class="text-gray-600" id="ncScore">-</span>
+                        </div>
+                        <div class="h-3 bg-gray-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-emerald-500 rounded-full transition-all duration-1000" id="ncBar" style="width:0%"></div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Rata-rata: <span id="ncAvg">-</span> / 4</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendation -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm" id="recommendationBox">
+                <h3 class="font-semibold text-gray-800 mb-2">💡 Rekomendasi</h3>
+                <p class="text-sm text-gray-600 leading-relaxed" id="recommendationText">-</p>
+            </div>
+
+            <!-- Certificate -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-semibold text-gray-800">📜 Sertifikat</h3>
+                    <button onclick="downloadCertificate()"
+                            class="text-xs px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                        ⬇ Download PDF
+                    </button>
+                </div>
+                <div id="certificatePreview" class="certificate rounded-xl p-6 text-center shadow-sm">
+                    <div class="border-b-2 border-gray-300 pb-4 mb-4">
+                        <p class="text-xs uppercase tracking-widest text-gray-500">Sertifikat Partisipasi</p>
+                        <p class="text-lg font-bold text-gray-800 mt-1">Survey Kesadaran Digital</p>
+                    </div>
+                    <p class="text-sm text-gray-600">Diberikan kepada:</p>
+                    <p class="text-xl font-bold text-gray-800 my-2" id="certName">-</p>
+                    <p class="text-xs text-gray-500">Atas partisipasinya dalam mengisi kuesioner kesadaran</p>
+                    <p class="text-sm font-medium text-gray-700">Rekayasa Sosial & Dampak Konten Negatif di Media Sosial</p>
+                    <div class="flex justify-center items-center gap-6 my-4">
+                        <div>
+                            <p class="text-xs text-gray-400">Grade</p>
+                            <p class="text-2xl font-black text-blue-600" id="certGrade">-</p>
+                        </div>
+                        <div class="w-px h-10 bg-gray-300"></div>
+                        <div>
+                            <p class="text-xs text-gray-400">Skor</p>
+                            <p class="text-xl font-bold text-gray-700" id="certScore">-</p>
+                        </div>
+                        <div class="w-px h-10 bg-gray-300"></div>
+                        <div>
+                            <p class="text-xs text-gray-400">Tanggal</p>
+                            <p class="text-sm font-semibold text-gray-700" id="certDate">-</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-3">Sertifikat ini diterbitkan secara otomatis oleh sistem.</p>
+                    <p class="text-xs text-gray-400" id="certInstitution">-</p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-3 pb-8">
+                <a href="/"
+                   class="flex-1 text-center py-3 bg-white border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition text-sm">
+                    ← Kembali ke Beranda
+                </a>
+                <a href="/survey?session={{ session_id }}"
+                   class="flex-1 text-center py-3 bg-gray-100 text-gray-500 font-medium rounded-xl text-sm cursor-not-allowed opacity-50" style="pointer-events:none">
+                    ✅ Sudah dikerjakan
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+</script>
+<script>
+    const sessionId = '{{ session_id }}';
+
+    const gradeColors = {
+        A: { bg: 'from-emerald-600 to-green-600', label: 'Sangat Baik (Expert)', desc: 'Pemahaman Anda sangat baik! Anda memiliki kesadaran komprehensif tentang keamanan informasi dan dampak konten negatif. Anda siap menjadi agen literasi digital.' },
+        B: { bg: 'from-blue-600 to-blue-700', label: 'Baik (Proficient)', desc: 'Pemahaman Anda sudah baik. Anda memahami konsep utama rekayasa sosial dan dampak konten negatif. Tingkatkan pengetahuan di beberapa aspek untuk mencapai level expert.' },
+        C: { bg: 'from-amber-500 to-orange-600', label: 'Cukup (Aware)', desc: 'Kesadaran dasar sudah terbentuk. Anda memahami risiko namun perlu edukasi lanjutan untuk memperkuat pemahaman tentang keamanan informasi dan literasi digital.' },
+        D: { bg: 'from-red-500 to-rose-600', label: 'Kurang (Beginner)', desc: 'Anda masih perlu meningkatkan pemahaman tentang rekayasa sosial dan dampak konten negatif. Kami sarankan mengikuti pelatihan dasar keamanan informasi dan literasi digital.' },
+    };
+
+    async function loadResult() {
+        try {
+            const res = await fetch(`/api/survey/${sessionId}/result`);
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail);
+            renderResult(data);
+        } catch (err) {
+            showToast('Gagal memuat hasil: ' + err.message, 'error');
+        }
+    }
+
+    function renderResult(d) {
+        document.getElementById('loadingScreen').classList.add('hidden');
+        document.getElementById('resultContent').classList.remove('hidden');
+
+        const gc = gradeColors[d.grade] || gradeColors.D;
+
+        // Grade card
+        const gradeCard = document.getElementById('gradeCard');
+        gradeCard.className = `grade-badge text-white rounded-2xl p-6 text-center shadow-xl bg-gradient-to-r ${gc.bg}`;
+        document.getElementById('gradeDisplay').textContent = d.grade;
+        document.getElementById('gradeLabel').textContent = gc.label;
+        document.getElementById('scoreDisplay').textContent = d.total_score;
+
+        // Scores
+        document.getElementById('seScore').textContent = d.se_score + '%';
+        document.getElementById('ncScore').textContent = d.nc_score + '%';
+        document.getElementById('seAvg').textContent = d.se_avg;
+        document.getElementById('ncAvg').textContent = d.nc_avg;
+
+        // Animate bars after render
+        setTimeout(() => {
+            document.getElementById('seBar').style.width = d.se_score + '%';
+            document.getElementById('ncBar').style.width = d.nc_score + '%';
+        }, 200);
+
+        // Recommendation
+        document.getElementById('recommendationText').textContent = gc.desc;
+
+        // Certificate
+        const name = d.respondent.name;
+        document.getElementById('certName').textContent = name;
+        document.getElementById('certGrade').textContent = d.grade;
+        document.getElementById('certScore').textContent = d.total_score + '/100';
+        document.getElementById('certDate').textContent = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('certInstitution').textContent = d.respondent.institution ? d.respondent.institution : 'Peserta Survey Kesadaran Digital';
+    }
+
+    async function downloadCertificate() {
+        const el = document.getElementById('certificatePreview');
+        const btn = event.target;
+        const origText = btn.textContent;
+        btn.textContent = '⏳ Memproses...';
+        btn.disabled = true;
+
+        try {
+            // Temporarily expand certificate for capture
+            el.style.padding = '40px';
+
+            const canvas = await html2canvas(el, {
+                scale: 3,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false,
+            });
+
+            el.style.padding = '';
+
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('l', 'mm', 'a5');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`Sertifikat_Survey_Digital.pdf`);
+
+            showToast('✅ Sertifikat berhasil di-download!', 'success');
+        } catch (err) {
+            showToast('Gagal generate PDF: ' + err.message, 'error');
+        } finally {
+            btn.textContent = origText;
+            btn.disabled = false;
+        }
+    }
+
+    loadResult();
+</script>
+{% endblock %}

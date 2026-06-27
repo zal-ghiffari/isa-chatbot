@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}Survey Kesadaran Digital{% endblock %}
+{% block content %}
+<div class="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
+    <!-- Hero -->
+    <div class="flex-1 flex items-center justify-center px-4 py-12">
+        <div class="w-full max-w-md mx-auto">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur rounded-2xl mb-4">
+                    <svg class="w-8 h-8 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">Survey Kesadaran Digital</h1>
+                <p class="text-blue-200/80 text-sm md:text-base">Rekayasa Sosial & Dampak Konten Negatif di Media Sosial</p>
+            </div>
+
+            <!-- Form Card -->
+            <div class="bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-6 md:p-8">
+                <form id="surveyForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
+                        <input type="text" name="name" required
+                               class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-sm"
+                               placeholder="Masukkan nama Anda">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+                            <input type="email" name="email"
+                                   class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-sm"
+                                   placeholder="email@contoh.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">No. HP</label>
+                            <input type="tel" name="phone"
+                                   class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-sm"
+                                   placeholder="08xxxxxxxxxx">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Instansi/OPD</label>
+                        <input type="text" name="institution"
+                               class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-sm"
+                               placeholder="Nama instansi (opsional)">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Provinsi</label>
+                            <select name="province"
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-sm bg-white">
+                                <option value="">Pilih provinsi</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Kota/Kab</label>
+                            <select name="city"
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-sm bg-white">
+                                <option value="">Pilih kota</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="bg-blue-50 rounded-xl p-3 text-xs text-blue-700 leading-relaxed">
+                        <strong>⏱ Durasi:</strong> ±5–7 menit · 20 pertanyaan pilihan ganda.
+                        Jawaban Anda bersifat <strong>anonim</strong> dan hanya digunakan untuk keperluan assessment.
+                    </div>
+                    <button type="submit"
+                            class="w-full py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-[0.98]">
+                        Mulai Survey →
+                    </button>
+                </form>
+            </div>
+
+            <!-- Admin Link -->
+            <div class="text-center mt-6">
+                <a href="/admin" class="text-blue-300/70 hover:text-blue-200 text-xs transition-colors">
+                    🔒 Panel Admin
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Provinsi & Kota data
+    const regions = {
+        "Aceh": ["Banda Aceh", "Sabang", "Lhokseumawe", "Langsa", "Bireuen", "Aceh Besar", "Pidie", "Aceh Utara", "Aceh Timur", "Aceh Tengah", "Aceh Barat", "Aceh Selatan", "Aceh Tamiang", "Aceh Singkil", "Subulussalam", "Gayo Lues", "Bener Meriah", "Pidie Jaya", "Aceh Jaya", "Nagan Raya", "Aceh Barat Daya", "Simeulue"],
+        "Sumatera Utara": ["Medan", "Binjai", "Tebing Tinggi", "Pematangsiantar", "Tanjungbalai", "Sibolga", "Padang Sidempuan", "Gunungsitoli", "Deli Serdang", "Karo", "Simalungun", "Asahan", "Labuhanbatu", "Tapanuli Utara", "Tapanuli Tengah", "Tapanuli Selatan", "Mandailing Natal", "Nias", "Humbang Hasundutan", "Pakpak Bharat", "Samosir", "Serdang Bedagai", "Batu Bara", "Padang Lawas", "Labuhanbatu Utara", "Labuhanbatu Selatan", "Nias Selatan", "Nias Utara", "Nias Barat"],
+        "Sumatera Barat": ["Padang", "Bukittinggi", "Padang Panjang", "Payakumbuh", "Solok", "Sawahlunto", "Pariaman", "Agam", "Tanah Datar", "Padang Pariaman", "Solok", "Sijunjung", "Pesisir Selatan", "Lima Puluh Kota", "Pasaman", "Solok Selatan", "Dharmasraya", "Pasaman Barat", "Kepulauan Mentawai"],
+        "Riau": ["Pekanbaru", "Dumai", "Kampar", "Indragiri Hulu", "Indragiri Hilir", "Pelalawan", "Siak", "Rokan Hulu", "Rokan Hilir", "Bengkalis", "Meranti Islands", "Kuantan Singingi"],
+        "Kepulauan Riau": ["Tanjungpinang", "Batam", "Bintan", "Karimun", "Natuna", "Lingga", "Anambas Islands"],
+        "Jambi": ["Jambi", "Sungai Penuh", "Batanghari", "Muaro Jambi", "Bungo", "Tebo", "Merangin", "Sarolangun", "Tanjung Jabung Timur", "Tanjung Jabung Barat", "Kerinci"],
+        "Bengkulu": ["Bengkulu", "Rejang Lebong", "Bengkulu Utara", "Bengkulu Selatan", "Bengkulu Tengah", "Kaur", "Seluma", "Muko Muko", "Lebong", "Kepahiang"],
+        "Sumatera Selatan": ["Palembang", "Prabumulih", "Lubuklinggau", "Pagar Alam", "Ogan Komering Ilir", "Ogan Komering Ulu", "Muara Enim", "Lahat", "Musi Rawas", "Musi Banyuasin", "Banyuasin", "Empat Lawang", "Penukal Abab Lematang Ilir", "Ogan Ilir", "Ogan Komering Ulu Selatan", "Ogan Komering Ulu Timur", "Musi Rawas Utara"],
+        "Bangka Belitung": ["Pangkalpinang", "Bangka", "Bangka Barat", "Bangka Selatan", "Bangka Tengah", "Belitung", "Belitung Timur"],
+        "Lampung": ["Bandar Lampung", "Metro", "Lampung Selatan", "Lampung Tengah", "Lampung Utara", "Lampung Barat", "Lampung Timur", "Tulang Bawang", "Tanggamus", "Way Kanan", "Pringsewu", "Pesawaran", "Mesuji", "Tulang Bawang Barat", "Pesisir Barat"],
+        "DKI Jakarta": ["Jakarta Pusat", "Jakarta Utara", "Jakarta Barat", "Jakarta Selatan", "Jakarta Timur", "Kepulauan Seribu"],
+        "Jawa Barat": ["Bandung", "Bekasi", "Bogor", "Depok", "Cimahi", "Tasikmalaya", "Banjar", "Bogor", "Sukabumi", "Cianjur", "Purwakarta", "Karawang", "Bekasi", "Subang", "Indramayu", "Sumedang", "Garut", "Tasikmalaya", "Ciamis", "Kuningan", "Majalengka", "Cirebon", "Bandung Barat", "Pangandaran"],
+        "Banten": ["Serang", "Tangerang", "Cilegon", "Tangerang Selatan", "Pandeglang", "Lebak", "Tangerang", "Serang"],
+        "Jawa Tengah": ["Semarang", "Salatiga", "Surakarta", "Pekalongan", "Tegal", "Magelang", "Banyumas", "Purbalingga", "Banjarnegara", "Kebumen", "Purworejo", "Wonosobo", "Magelang", "Boyolali", "Klaten", "Sukoharjo", "Wonogiri", "Karanganyar", "Sragen", "Grobogan", "Blora", "Rembang", "Pati", "Jepara", "Demak", "Kudus", "Semarang", "Temanggung", "Kendal", "Batang", "Pekalongan", "Pemalang", "Tegal", "Brebes", "Cilacap"],
+        "DI Yogyakarta": ["Yogyakarta", "Sleman", "Bantul", "Kulon Progo", "Gunungkidul"],
+        "Jawa Timur": ["Surabaya", "Malang", "Madiun", "Kediri", "Blitar", "Pasuruan", "Probolinggo", "Batu", "Mojokerto", "Banyuwangi", "Bangkalan", "Sampang", "Pamekasan", "Sumenep", "Tuban", "Lamongan", "Gresik", "Sidoarjo", "Mojokerto", "Jombang", "Nganjuk", "Ngawi", "Magetan", "Madiun", "Ponorogo", "Trenggalek", "Tulungagung", "Blitar", "Kediri", "Malang", "Lumajang", "Probolinggo", "Pasuruan", "Situbondo", "Bondowoso", "Jember", "Pacitan", "Bojonegoro"],
+        "Bali": ["Denpasar", "Badung", "Bangli", "Buleleng", "Gianyar", "Jembrana", "Karangasem", "Klungkung", "Tabanan"],
+        "Nusa Tenggara Barat": ["Mataram", "Bima", "Lombok Barat", "Lombok Tengah", "Lombok Timur", "Lombok Utara", "Sumbawa", "Sumbawa Barat", "Dompu", "Bima"],
+        "Nusa Tenggara Timur": ["Kupang", "Ende", "Maumere", "Ruteng", "Atambua", "Waingapu", "Kupang", "Timor Tengah Selatan", "Timor Tengah Utara", "Belu", "Malaka", "Alor", "Lembata", "Flores Timur", "Sikka", "Ende", "Ngada", "Nagekeo", "Manggarai", "Manggarai Timur", "Manggarai Barat", "Sumba Timur", "Sumba Tengah", "Sumba Barat", "Sumba Barat Daya", "Rote Ndao", "Sabu Raijua"],
+        "Kalimantan Barat": ["Pontianak", "Singkawang", "Sambas", "Bengkayang", "Landak", "Mempawah", "Sanggau", "Sintang", "Kapuas Hulu", "Sekadau", "Melawi", "Kayong Utara", "Ketapang", "Kubu Raya"],
+        "Kalimantan Tengah": ["Palangka Raya", "Katingan", "Gunung Mas", "Kapuas", "Pulang Pisau", "Barito Selatan", "Barito Timur", "Barito Utara", "Murung Raya", "Sukamara", "Lamandau", "Seruyan", "Kotawaringin Barat", "Kotawaringin Timur"],
+        "Kalimantan Selatan": ["Banjarmasin", "Banjarbaru", "Tanah Laut", "Kotabaru", "Banjar", "Barito Kuala", "Tapin", "Hulu Sungai Selatan", "Hulu Sungai Tengah", "Hulu Sungai Utara", "Tabalong", "Balangan", "Tanah Bumbu"],
+        "Kalimantan Timur": ["Samarinda", "Balikpapan", "Bontang", "Kutai Kartanegara", "Kutai Timur", "Kutai Barat", "Penajam Paser Utara", "Paser", "Berau", "Mahakam Ulu"],
+        "Kalimantan Utara": ["Tarakan", "Bulungan", "Malinau", "Nunukan", "Tana Tidung"],
+        "Sulawesi Utara": ["Manado", "Bitung", "Tomohon", "Kotamobagu", "Minahasa", "Minahasa Utara", "Minahasa Selatan", "Minahasa Tenggara", "Bolaang Mongondow", "Bolaang Mongondow Utara", "Bolaang Mongondow Selatan", "Bolaang Mongondow Timur", "Sangihe Islands", "Sitaro Islands", "Talaud Islands"],
+        "Sulawesi Tengah": ["Palu", "Poso", "Donggala", "Parigi Moutong", "Sigi", "Tojo Una-Una", "Banggai", "Banggai Kepulauan", "Banggai Laut", "Morowali", "Morowali Utara", "Buol", "Tolitoli"],
+        "Sulawesi Selatan": ["Makassar", "Parepare", "Palopo", "Barru", "Bone", "Bulukumba", "Enrekang", "Gowa", "Jeneponto", "Luwu", "Luwu Timur", "Luwu Utara", "Maros", "Pangkajene Kepulauan", "Pinrang", "Selayar Islands", "Sidenreng Rappang", "Sinjai", "Soppeng", "Takalar", "Tana Toraja", "Toraja Utara", "Wajo"],
+        "Sulawesi Tenggara": ["Kendari", "Baubau", "Bombana", "Buton", "Buton Selatan", "Buton Tengah", "Buton Utara", "Kolaka", "Kolaka Timur", "Kolaka Utara", "Konawe", "Konawe Selatan", "Konawe Utara", "Konawe Kepulauan", "Muna", "Muna Barat", "Wakatobi"],
+        "Sulawesi Barat": ["Mamuju", "Majene", "Mamuju Tengah", "Mamuju Utara", "Polewali Mandar", "Pasangkayu"],
+        "Gorontalo": ["Gorontalo", "Gorontalo Utara", "Gorontalo Selatan", "Boalemo", "Pohuwato", "Bone Bolango"],
+        "Maluku": ["Ambon", "Tual", "Maluku Tengah", "Maluku Tenggara", "Maluku Tenggara Barat", "Seram Bagian Barat", "Seram Bagian Timur", "Buru", "Buru Selatan", "Kepulauan Aru", "Maluku Barat Daya"],
+        "Maluku Utara": ["Ternate", "Tidore", "Halmahera Barat", "Halmahera Tengah", "Halmahera Timur", "Halmahera Utara", "Halmahera Selatan", "Kepulauan Sula", "Morotai Island", "Taliabu Island"],
+        "Papua": ["Jayapura", "Merauke", "Nabire", "Biak Numfor", "Yapen Islands", "Waropen", "Sarmi", "Mamberamo Raya", "Supiori", "Asmat", "Boven Digoel", "Mappi", "Keerom", "Pegunungan Bintang", "Yahukimo", "Tolikara", "Jayawijaya", "Lanny Jaya", "Nduga", "Mamberamo Tengah", "Yalimo", "Puncak", "Puncak Jaya", "Intan Jaya", "Deiyai", "Dogiyai"],
+        "Papua Barat": ["Manokwari", "Sorong", "Fakfak", "Kaimana", "Sorong Selatan", "Raja Ampat", "Teluk Bintuni", "Teluk Wondama", "Manokwari Selatan", "Pegunungan Arfak", "Tambrauw", "Maybrat"],
+        "Papua Tengah": ["Mimika", "Paniai", "Nabire"],
+        "Papua Pegunungan": ["Jayawijaya", "Yahukimo", "Tolikara"],
+        "Papua Selatan": ["Merauke", "Mappi", "Boven Digoel", "Asmat"],
+        "Papua Barat Daya": ["Sorong", "Raja Ampat", "Sorong Selatan", "Tambrauw", "Maybrat"]
+    };
+
+    const provinceSelect = document.querySelector('select[name="province"]');
+    const citySelect = document.querySelector('select[name="city"]');
+
+    // Populate provinces
+    Object.keys(regions).sort().forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p;
+        opt.textContent = p;
+        provinceSelect.appendChild(opt);
+    });
+
+    provinceSelect.addEventListener('change', function() {
+        const cities = regions[this.value] || [];
+        citySelect.innerHTML = '<option value="">Pilih kota</option>';
+        cities.sort().forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c;
+            opt.textContent = c;
+            citySelect.appendChild(opt);
+        });
+    });
+
+    // Form submit
+    document.getElementById('surveyForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = this.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = 'Memulai...';
+
+        const fd = new FormData(this);
+        try {
+            const res = await fetch('/api/survey/start', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || 'Gagal memulai survey');
+            window.location.href = `/survey?session=${data.session_id}`;
+        } catch (err) {
+            showToast(err.message, 'error');
+            btn.disabled = false;
+            btn.textContent = 'Mulai Survey →';
+        }
+    });
+</script>
+{% endblock %}
