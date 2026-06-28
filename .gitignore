@@ -1,3 +1,4 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -6,4 +7,17 @@ venv/
 .venv/
 *.db
 survey.db
+
+# Node
+node_modules/
+dist/
+build/
+.vite/
+
+# OS
 .DS_Store
+
+# IDE
+.idea/
+*.swp
+*.swo
