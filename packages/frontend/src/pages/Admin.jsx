@@ -97,11 +97,6 @@ export default function Admin() {
           <div className="text-lg font-bold text-primary">SadarSiber.ID</div>
           <div className="text-xs text-gray-400 mt-1">Admin Panel</div>
         </div>
-        <div className="p-4">
-          <Link to="/sessions/create" className="w-full flex items-center justify-center gap-2 bg-primary text-white text-sm font-medium py-2.5 rounded-lg hover:brightness-90 transition-colors">
-            <span className="material-symbols-outlined text-lg">add</span> New Survey
-          </Link>
-        </div>
         <nav className="flex-1 px-3 space-y-0.5">
           {['dashboard', 'users', 'sessions'].map((t) => (
             <button key={t} onClick={() => setTab(t)}
@@ -111,7 +106,10 @@ export default function Admin() {
             </button>
           ))}
         </nav>
-        <div className="p-4 border-t border-gray-100">
+        <div className="p-4 border-t border-gray-100 space-y-1">
+          <Link to="/dashboard" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 rounded-lg">
+            <span className="material-symbols-outlined">dashboard</span> Back to Dashboard
+          </Link>
           <Link to="/" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 rounded-lg">
             <span className="material-symbols-outlined">logout</span> Back to Home
           </Link>
