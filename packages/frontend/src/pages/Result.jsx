@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 import { getResult } from '../api/client'
 
 const gradeColors = {
@@ -45,10 +46,10 @@ export default function Result() {
         backgroundColor: '#1e293b',
         useCORS: true,
       })
-      const link = document.createElement('a')
-      link.download = `sertifikat-sadarsiber-${data.respondent.name.toLowerCase().replace(/\s+/g, '-')}.png`
-      link.href = canvas.toDataURL()
-      link.click()
+      const imgData = canvas.toDataURL('image/png')
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width / 2, canvas.height / 2] })
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2)
+      pdf.save(`sertifikat-sadarsiber-${data.respondent.name.toLowerCase().replace(/\s+/g, '-')}.pdf`)
     } catch {}
     setDownloading(false)
   }

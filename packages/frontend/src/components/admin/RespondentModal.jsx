@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 import { getRespondentDetail } from '../../api/client'
 import { getAvatarById } from '../../data/avatars'
 
@@ -142,10 +143,10 @@ export default function RespondentModal({ respondentId, onClose }) {
                     setDownloading(true)
                     try {
                       const canvas = await html2canvas(certRef.current, { scale: 2, backgroundColor: '#1e293b', useCORS: true })
-                      const link = document.createElement('a')
-                      link.download = `sertifikat-sadarsiber-${data.respondent.name.toLowerCase().replace(/\s+/g, '-')}.png`
-                      link.href = canvas.toDataURL()
-                      link.click()
+                      const imgData = canvas.toDataURL('image/png')
+                      const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width / 2, canvas.height / 2] })
+                      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2)
+                      pdf.save(`sertifikat-sadarsiber-${data.respondent.name.toLowerCase().replace(/\s+/g, '-')}.pdf`)
                     } catch {}
                     setDownloading(false)
                   }} disabled={downloading}
