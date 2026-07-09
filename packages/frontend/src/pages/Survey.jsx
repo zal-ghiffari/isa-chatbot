@@ -3,8 +3,8 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import { getCurrentQuestion, answerQuestion } from '../api/client'
 
 const topicLabels = {
-  social_engineering: '🔒 Rekayasa Sosial',
-  negative_content: '📱 Dampak Konten Negatif',
+  social_engineering: '\u{1F512} Rekayasa Sosial',
+  negative_content: '\u{1F4F1} Dampak Konten Negatif',
 }
 
 const scoreBtn = {
@@ -12,6 +12,35 @@ const scoreBtn = {
   2: 'border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100',
   3: 'border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100',
   4: 'bg-emerald-600 text-white hover:bg-emerald-700 border-emerald-600',
+}
+
+const encouragements = [
+  { at: 5, emoji: '\u{1F3AF}', msg: 'Semangat! Sudah 25%!', color: 'from-blue-500 to-blue-600' },
+  { at: 10, emoji: '\u{1F4AA}', msg: 'Hebat! Setengah jalan!', color: 'from-emerald-500 to-emerald-600' },
+  { at: 15, emoji: '\u{1F525}', msg: 'Mantap! Tinggal sedikit lagi!', color: 'from-orange-500 to-red-500' },
+  { at: 20, emoji: '\u{1F389}', msg: 'Selesai! Luar biasa!', color: 'from-purple-500 to-pink-500' },
+]
+
+function FireBurst() {
+  const particles = Array.from({ length: 12 }, (_, i) => ({
+    id: i,
+    angle: (i * 360) / 12,
+    color: ['#FF6B6B', '#FFD93D', '#4ECDC4', '#A29BFE', '#FF8A5C', '#6C5CE7'][i % 6],
+  }))
+  return (
+    <div className="fixed inset-0 pointer-events-none z-[9999] flex items-center justify-center">
+      {particles.map((p) => (
+        <div key={p.id}
+          className="absolute w-3 h-3 rounded-full animate-fireBurst"
+          style={{
+            backgroundColor: p.color,
+            '--tx': `${Math.cos((p.angle * Math.PI) / 180) * 80}px`,
+            '--ty': `${Math.sin((p.angle * Math.PI) / 180) * 80}px`,
+          }}
+        />
+      ))}
+    </div>
+  )
 }
 
 export default function Survey() {
@@ -26,6 +55,9 @@ export default function Survey() {
   const [totalQ, setTotalQ] = useState(20)
   const [isAnswering, setIsAnswering] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [fireBurst, setFireBurst] = useState(null)
+  const [encourage, setEncourage] = useState(null)
+  const [showWelcome, setShowWelcome] = useState(true)
   const [messages, setMessages] = useState([
     { role: 'bot', text: 'Selamat datang di SadarSiber.ID! Saya akan menanyakan 20 pertanyaan tentang keamanan siber. Klik tombol di bawah untuk mulai.' },
   ])
@@ -38,17 +70,38 @@ export default function Survey() {
     setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 80)
   }, [messages, currentQ])
 
+  useEffect(() => {
+    if (showWelcome) {
+      const t = setTimeout(() => setShowWelcome(false), 2000)
+      return () => clearTimeout(t)
+    }
+  }, [showWelcome])
+
   const addBotMsg = (text) => setMessages((prev) => [...prev, { role: 'bot', text }])
   const addUserMsg = (text) => setMessages((prev) => [...prev, { role: 'user', text }])
 
   const showQuestion = (q) => {
-    const topic = q.topic === 'social_engineering' ? '🔒 Rekayasa Sosial' : '📱 Dampak Konten Negatif'
-    addBotMsg(`**Pertanyaan ${q.order_num} — ${topic}**\n\n${q.question_text}`)
+    const topic = q.topic === 'social_engineering' ? '\u{1F512} Rekayasa Sosial' : '\u{1F4F1} Dampak Konten Negatif'
+    addBotMsg(`**Pertanyaan ${q.order_num} \u2014 ${topic}**\n\n${q.question_text}`)
+  }
+
+  const triggerEncouragement = (count) => {
+    const e = encouragements.find((e) => e.at === count)
+    if (e) {
+      setEncourage(e)
+      setTimeout(() => setEncourage(null), 2500)
+    }
+  }
+
+  const triggerFire = () => {
+    setFireBurst(Date.now())
+    setTimeout(() => setFireBurst(null), 600)
   }
 
   const startSurvey = async () => {
     setStarted(true)
-    addBotMsg('Baik, mari kita mulai! 🎯')
+    setShowWelcome(true)
+    addBotMsg('Baik, mari kita mulai! \u{1F3AF}')
     try {
       const { data } = await getCurrentQuestion(sessionId)
       setTotalQ(data.total)
@@ -56,7 +109,7 @@ export default function Survey() {
       showQuestion(data.question)
       setIsAnswering(true)
     } catch (err) {
-      addBotMsg(`❌ Gagal memuat pertanyaan: ${err.response?.data?.detail || err.message}`)
+      addBotMsg(`\u274C Gagal memuat pertanyaan: ${err.response?.data?.detail || err.message}`)
     }
   }
 
@@ -65,24 +118,27 @@ export default function Survey() {
     setIsAnswering(false)
     addUserMsg(`${score}. ${currentQ[`scale_${score}`]}`)
     setAnsweredCount((prev) => prev + 1)
+    triggerFire()
     setMessages((prev) => [...prev, { role: 'typing' }])
 
     try {
       const { data } = await answerQuestion(sessionId, currentQ.id, score)
       setMessages((prev) => prev.filter((m) => m.role !== 'typing'))
+      const newCount = answeredCount + 1
+      triggerEncouragement(newCount)
       if (data.done) {
         setCurrentQ(null)
-        addBotMsg('✅ Survey selesai! Menghitung hasil...')
+        addBotMsg('\u2705 Survey selesai! Menghitung hasil...')
         setLoading(true)
         setTimeout(() => navigate(`/result/${sessionId}`), 1500)
       } else {
-        addBotMsg('Lanjut ke pertanyaan berikutnya ⏭️')
+        addBotMsg('Lanjut ke pertanyaan berikutnya \u23EE\uFE0F')
         setTimeout(async () => {
           try {
             const qData = await getCurrentQuestion(sessionId)
             if (qData.data.done) {
               setCurrentQ(null)
-              addBotMsg('✅ Survey selesai! Menghitung hasil...')
+              addBotMsg('\u2705 Survey selesai! Menghitung hasil...')
               setLoading(true)
               setTimeout(() => navigate(`/result/${sessionId}`), 1500)
               return
@@ -91,14 +147,14 @@ export default function Survey() {
             showQuestion(qData.data.question)
             setIsAnswering(true)
           } catch {
-            addBotMsg('❌ Gagal memuat pertanyaan')
+            addBotMsg('\u274C Gagal memuat pertanyaan')
             setIsAnswering(true)
           }
         }, 400)
       }
     } catch (err) {
       setMessages((prev) => prev.filter((m) => m.role !== 'typing'))
-      addBotMsg(`❌ ${err.response?.data?.detail || err.message}`)
+      addBotMsg(`\u274C ${err.response?.data?.detail || err.message}`)
       setIsAnswering(true)
     }
   }
@@ -110,7 +166,28 @@ export default function Survey() {
   const offset = circleLen - (progress / 100) * circleLen
 
   return (
-    <div className="h-dvh flex flex-col bg-gray-50 max-w-lg mx-auto shadow-sm">
+    <div className="h-dvh flex flex-col bg-gray-50 max-w-lg mx-auto shadow-sm relative">
+      {fireBurst && <FireBurst key={fireBurst} />}
+
+      {encourage && (
+        <div className="fixed inset-0 z-[9998] flex items-center justify-center pointer-events-none">
+          <div className={`bg-gradient-to-r ${encourage.color} text-white rounded-2xl px-8 py-5 shadow-2xl animate-bounce-in text-center`}>
+            <div className="text-3xl mb-2">{encourage.emoji}</div>
+            <p className="text-lg font-bold">{encourage.msg}</p>
+          </div>
+        </div>
+      )}
+
+      {showWelcome && started && (
+        <div className="absolute inset-0 z-[9997] flex items-center justify-center bg-black/10 pointer-events-none">
+          <div className="bg-white rounded-2xl px-8 py-6 shadow-2xl animate-bounce-in text-center">
+            <div className="text-4xl mb-2">🚀</div>
+            <p className="text-lg font-bold text-gray-800">Selamat Mengerjakan!</p>
+            <p className="text-sm text-gray-500 mt-1">Jawab sejujur mungkin ya</p>
+          </div>
+        </div>
+      )}
+
       <header className="bg-white border-b border-gray-200 px-4 h-14 flex items-center justify-between shrink-0">
         <button onClick={() => navigate('/')} className="text-gray-400 hover:text-gray-600 p-1 -ml-1">
           <span className="material-symbols-outlined">arrow_back</span>

@@ -113,6 +113,7 @@ def start_survey(
     name: str = Form(...), email: str = Form(""), phone: str = Form(""),
     institution: str = Form(""), province: str = Form(""), city: str = Form(""),
     session_token: str = Form(""), authorization: str = Form(""),
+    avatar: str = Form(""),
 ):
     if not name.strip():
         raise HTTPException(400, "Nama wajib diisi")
@@ -126,7 +127,7 @@ def start_survey(
         s = get_session_by_token(session_token)
         if s:
             session_db_id = s["id"]
-    rid = create_respondent(name.strip(), email, phone, institution, province, city, user_id, session_db_id)
+    rid = create_respondent(name.strip(), email, phone, institution, province, city, user_id, session_db_id, avatar)
     questions = get_questions()
     sess_id = str(uuid.uuid4())
     survey_sessions[sess_id] = {"respondent_id": rid, "current_q": 0, "total_q": len(questions), "done": False}

@@ -89,6 +89,10 @@ def init_db():
             cur.execute(f"ALTER TABLE respondents ADD COLUMN {col} INTEGER")
         except sqlite3.OperationalError:
             pass
+    try:
+        cur.execute("ALTER TABLE respondents ADD COLUMN avatar TEXT DEFAULT ''")
+    except sqlite3.OperationalError:
+        pass
     conn.commit(), conn.close()
 
 def seed_questions():
@@ -212,7 +216,7 @@ def get_session_results(session_id):
     conn = get_connection()
     cur = conn.cursor()
     participants = cur.execute("""
-        SELECT r.id, r.name, r.institution, a.total_score, a.grade, a.completed_at
+        SELECT r.id, r.name, r.institution, r.avatar, a.total_score, a.grade, a.completed_at
         FROM respondents r LEFT JOIN assessments a ON r.id = a.respondent_id
         WHERE r.session_id = ? ORDER BY a.completed_at DESC
     """, (session_id,)).fetchall()
@@ -246,10 +250,10 @@ def get_all_sessions():
 
 # ─── Survey ──────────────────────────────────────────────────────────
 
-def create_respondent(name, email, phone, institution, province, city, user_id=None, session_id=None):
+def create_respondent(name, email, phone, institution, province, city, user_id=None, session_id=None, avatar=""):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("INSERT INTO respondents (name, email, phone, institution, province, city, user_id, session_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (name, email, phone, institution, province, city, user_id, session_id))
+    cur.execute("INSERT INTO respondents (name, email, phone, institution, province, city, user_id, session_id, avatar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (name, email, phone, institution, province, city, user_id, session_id, avatar))
     conn.commit()
     rid = cur.lastrowid
     conn.close()
@@ -309,7 +313,7 @@ def get_admin_stats():
     grade_dist = cur.execute("SELECT grade, COUNT(*) as count FROM assessments GROUP BY grade ORDER BY grade").fetchall()
     avg_score = cur.execute("SELECT COALESCE(AVG(total_score), 0) FROM assessments").fetchone()[0]
     grade_labels = {"A": "Sangat Baik", "B": "Baik", "C": "Cukup", "D": "Kurang"}
-    recent = cur.execute("SELECT a.*, r.name, r.institution, r.province FROM assessments a JOIN respondents r ON a.respondent_id = r.id ORDER BY a.completed_at DESC LIMIT 20").fetchall()
+    recent = cur.execute("SELECT a.*, r.name, r.institution, r.province, r.avatar FROM assessments a JOIN respondents r ON a.respondent_id = r.id ORDER BY a.completed_at DESC LIMIT 20").fetchall()
     geo = cur.execute("SELECT r.province, COUNT(*) as total, COALESCE(AVG(a.total_score), 0) as avg_score, r.city FROM respondents r LEFT JOIN assessments a ON r.id = a.respondent_id GROUP BY r.province, r.city ORDER BY r.province").fetchall()
     per_question = cur.execute("SELECT q.order_num, q.question_text, q.topic, COALESCE(AVG(r.score), 0) as avg_score, COUNT(r.id) as response_count FROM questions q LEFT JOIN responses r ON q.id = r.question_id GROUP BY q.id ORDER BY q.order_num").fetchall()
     total_users = cur.execute("SELECT COUNT(*) FROM users WHERE role='user'").fetchone()[0]
@@ -321,7 +325,7 @@ def get_respondents_by_user(user_id):
     conn = get_connection()
     cur = conn.cursor()
     rows = cur.execute("""
-        SELECT r.id as respondent_id, r.name, r.email, r.institution, a.total_score, a.grade, a.completed_at, s.title as session_title
+        SELECT r.id as respondent_id, r.name, r.email, r.institution, r.avatar, a.total_score, a.grade, a.completed_at, s.title as session_title
         FROM respondents r LEFT JOIN assessments a ON r.id = a.respondent_id
         LEFT JOIN survey_sessions s ON r.session_id = s.id
         WHERE r.user_id = ? ORDER BY a.completed_at DESC

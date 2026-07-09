@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { getSessionInfo, getSessionResults } from '../api/client'
+import { getAvatarById } from '../data/avatars'
 import RespondentModal from '../components/admin/RespondentModal'
 
 const gradeColors = { A: '#059669', B: '#004ac6', C: '#d97706', D: '#e11d48' }
@@ -109,7 +110,14 @@ export default function SessionResults() {
                     ? <tr><td colSpan={5} className="px-5 py-8 text-center text-gray-400">Belum ada peserta</td></tr>
                     : results?.participants.map((p, i) => (
                         <tr key={i} className="hover:bg-gray-50">
-                          <td className="px-5 py-3.5 font-medium text-gray-900">{p.name}</td>
+                          <td className="px-5 py-3.5">
+                            <div className="flex items-center gap-2">
+                              <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-xs" style={{ backgroundColor: getAvatarById(p.avatar).bg }}>
+                                <span role="img" aria-label={getAvatarById(p.avatar).label}>{getAvatarById(p.avatar).emoji}</span>
+                              </div>
+                              <span className="font-medium text-gray-900">{p.name}</span>
+                            </div>
+                          </td>
                           <td className="px-5 py-3.5 text-gray-500">{p.institution || '-'}</td>
                           <td className="px-5 py-3.5 font-semibold text-gray-700">{p.total_score || '-'}</td>
                           <td className="px-5 py-3.5">{p.grade ? <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${gradeBadge[p.grade] || 'bg-gray-100 text-gray-500'}`}>{p.grade}</span> : '-'}</td>

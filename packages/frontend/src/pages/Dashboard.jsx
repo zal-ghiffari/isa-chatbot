@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate, Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { getMySessions, getUserSurveys } from '../api/client'
+import { getAvatarById } from '../data/avatars'
 
 const gradeBadge = { A: 'bg-emerald-50 text-emerald-600', B: 'bg-blue-50 text-blue-600', C: 'bg-amber-50 text-amber-600', D: 'bg-red-50 text-red-600' }
 
@@ -175,30 +176,33 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {surveys.map((s, i) => (
-                      <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors gap-3">
-                        <div className="flex items-start gap-3">
-                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${s.grade ? 'bg-emerald-50' : 'bg-gray-50'}`}>
-                            <span className={`material-symbols-outlined ${s.grade ? 'text-emerald-600' : 'text-gray-400'}`}>{s.grade ? 'verified' : 'pending'}</span>
+                    {surveys.map((s, i) => {
+                      const av = getAvatarById(s.avatar)
+                      return (
+                        <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors gap-3">
+                          <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-lg" style={{ backgroundColor: av.bg }}>
+                              <span role="img" aria-label={av.label}>{av.emoji}</span>
+                            </div>
+                            <div>
+                              <h3 className="text-sm font-semibold text-gray-900">{s.name}</h3>
+                              <p className="text-xs text-gray-400 mt-0.5">{s.institution || s.email || '-'}</p>
+                              {s.session_title && <p className="text-xs text-blue-500 mt-0.5">Sesi: {s.session_title}</p>}
+                            </div>
                           </div>
-                          <div>
-                            <h3 className="text-sm font-semibold text-gray-900">{s.name}</h3>
-                            <p className="text-xs text-gray-400 mt-0.5">{s.institution || s.email || '-'}</p>
-                            {s.session_title && <p className="text-xs text-blue-500 mt-0.5">Sesi: {s.session_title}</p>}
+                          <div className="flex items-center gap-3 shrink-0">
+                            {s.grade ? (
+                              <>
+                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${gradeBadge[s.grade] || 'bg-gray-100 text-gray-500'}`}>{s.grade}</span>
+                                <span className="text-sm font-semibold text-gray-700">{s.total_score}</span>
+                              </>
+                            ) : (
+                              <span className="text-xs text-gray-400 bg-gray-50 px-2.5 py-1 rounded-full">Pending</span>
+                            )}
                           </div>
                         </div>
-                        <div className="flex items-center gap-3 shrink-0">
-                          {s.grade ? (
-                            <>
-                              <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${gradeBadge[s.grade] || 'bg-gray-100 text-gray-500'}`}>{s.grade}</span>
-                              <span className="text-sm font-semibold text-gray-700">{s.total_score}</span>
-                            </>
-                          ) : (
-                            <span className="text-xs text-gray-400 bg-gray-50 px-2.5 py-1 rounded-full">Pending</span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 )
               )}

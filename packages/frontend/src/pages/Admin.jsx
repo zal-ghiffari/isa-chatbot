@@ -3,6 +3,7 @@ import { Link, Navigate } from 'react-router-dom'
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { getAdminStats, getAdminUsers, getAdminSessions } from '../api/client'
 import { useAuth } from '../contexts/AuthContext'
+import { getAvatarById } from '../data/avatars'
 import RespondentModal from '../components/admin/RespondentModal'
 
 const scoreClass = { A: 'bg-emerald-50 text-emerald-600', B: 'bg-blue-50 text-blue-600', C: 'bg-amber-50 text-amber-600', D: 'bg-red-50 text-red-600' }
@@ -269,11 +270,20 @@ export default function Admin() {
                         <tbody className="divide-y divide-gray-50">
                           {filteredRecent.length === 0 ? (
                             <tr><td colSpan={5} className="px-5 py-8 text-center text-gray-400">{search ? 'No results' : 'No data yet'}</td></tr>
-                          ) : filteredRecent.map((r, i) => (
+                          ) : filteredRecent.map((r, i) => {
+                            const av = getAvatarById(r.avatar)
+                            return (
                             <tr key={i} className="hover:bg-gray-50 transition-colors">
                               <td className="px-5 py-3.5">
-                                <div className="font-medium text-gray-900">{r.name}</div>
-                                <div className="text-xs text-gray-400">{r.email || '-'}</div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-sm" style={{ backgroundColor: av.bg }}>
+                                    <span role="img" aria-label={av.label}>{av.emoji}</span>
+                                  </div>
+                                  <div>
+                                    <div className="font-medium text-gray-900">{r.name}</div>
+                                    <div className="text-xs text-gray-400">{r.email || '-'}</div>
+                                  </div>
+                                </div>
                               </td>
                               <td className="px-5 py-3.5 text-gray-500">{r.institution || '-'}</td>
                               <td className="px-5 py-3.5 text-gray-500">{r.province || '-'}</td>
@@ -288,8 +298,9 @@ export default function Admin() {
                                 <button onClick={() => setSelectedResp(r.respondent_id || r.id)}
                                   className="text-primary hover:text-blue-800 text-sm font-medium transition-colors">Detail</button>
                               </td>
-                            </tr>
-                          ))}
+                              </tr>
+                            )
+                          })}
                         </tbody>
                       </table>
                     </div>

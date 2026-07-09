@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { getResult } from '../api/client'
+import { getAvatarById } from '../data/avatars'
 
 const gradeColors = {
   A: { bg: 'from-emerald-600 to-green-600', label: 'Sangat Baik (Expert)', desc: 'Pemahaman Anda sangat baik! Anda memiliki kesadaran komprehensif tentang keamanan informasi dan dampak konten negatif. Anda siap menjadi agen literasi digital.' },
@@ -56,6 +57,7 @@ export default function Result() {
     )
   }
 
+  const av = getAvatarById(data.respondent.avatar)
   const gc = gradeColors[data.grade] || gradeColors.D
   const today = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })
 
@@ -116,7 +118,12 @@ export default function Result() {
               <p className="text-lg font-bold text-gray-800 mt-1">Survey Kesadaran Digital</p>
             </div>
             <p className="text-sm text-gray-600">Diberikan kepada:</p>
-            <p className="text-xl font-bold text-gray-800 my-2">{data.respondent.name}</p>
+            <div className="flex items-center justify-center gap-2 my-2">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style={{ backgroundColor: av.bg }}>
+                <span role="img" aria-label={av.label}>{av.emoji}</span>
+              </div>
+              <p className="text-xl font-bold text-gray-800">{data.respondent.name}</p>
+            </div>
             <p className="text-xs text-gray-500">Atas partisipasinya dalam mengisi kuesioner kesadaran</p>
             <p className="text-sm font-medium text-gray-700">Rekayasa Sosial & Dampak Konten Negatif di Media Sosial</p>
             <div className="flex justify-center items-center gap-6 my-4">

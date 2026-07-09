@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getRespondentDetail } from '../../api/client'
+import { getAvatarById } from '../../data/avatars'
 
 const gradeBg = { A: 'bg-emerald-600', B: 'bg-blue-600', C: 'bg-amber-500', D: 'bg-red-500' }
 const scoreBadge = {
@@ -52,8 +53,8 @@ export default function RespondentModal({ respondentId, onClose }) {
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
             <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-2xl text-blue-500">person</span>
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 text-2xl" style={{ backgroundColor: getAvatarById(data.respondent.avatar).bg }}>
+                  <span role="img" aria-label={getAvatarById(data.respondent.avatar).label}>{getAvatarById(data.respondent.avatar).emoji}</span>
                 </div>
                 <div>
                   <h3 className="text-base font-semibold text-gray-900">{data.respondent.name}</h3>
