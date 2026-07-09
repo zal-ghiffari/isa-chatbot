@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import html2canvas from 'html2canvas'
 import { getResult } from '../api/client'
 import { getAvatarById } from '../data/avatars'
 
@@ -12,8 +13,10 @@ const gradeColors = {
 
 export default function Result() {
   const { sessionId } = useParams()
+  const certRef = useRef(null)
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [downloading, setDownloading] = useState(false)
   const [seBar, setSeBar] = useState('0%')
   const [ncBar, setNcBar] = useState('0%')
 
@@ -28,12 +31,28 @@ export default function Result() {
           setNcBar(result.nc_score + '%')
         }, 200)
       } catch {
-        // handled by empty state
       } finally {
         setLoading(false)
       }
     })()
   }, [sessionId])
+
+  const handleDownload = async () => {
+    if (!certRef.current) return
+    setDownloading(true)
+    try {
+      const canvas = await html2canvas(certRef.current, {
+        scale: 2,
+        backgroundColor: null,
+        useCORS: true,
+      })
+      const link = document.createElement('a')
+      link.download = `sertifikat-sadarsiber-${data.respondent.name.toLowerCase().replace(/\s+/g, '-')}.png`
+      link.href = canvas.toDataURL()
+      link.click()
+    } catch {}
+    setDownloading(false)
+  }
 
   if (loading) {
     return (
@@ -60,12 +79,13 @@ export default function Result() {
   const av = getAvatarById(data.respondent.avatar)
   const gc = gradeColors[data.grade] || gradeColors.D
   const today = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })
+  const certTitle = data.session?.title || 'SadarSiber.ID'
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-6 px-4">
       <div className="max-w-lg mx-auto space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800">🎉 Hasil Assessment</h1>
+          <h1 className="text-2xl font-bold text-gray-800">{'\uD83C\uDF89'} Hasil Assessment</h1>
           <p className="text-gray-500 text-sm mt-1">Survey Kesadaran Digital</p>
         </div>
 
@@ -80,11 +100,11 @@ export default function Result() {
         </div>
 
         <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <h3 className="font-semibold text-gray-800 mb-4">📊 Rincian Skor per Topik</h3>
+          <h3 className="font-semibold text-gray-800 mb-4">{'\uD83D\uDCCA'} Rincian Skor per Topik</h3>
           <div className="space-y-4">
             <div>
               <div className="flex justify-between text-sm mb-1">
-                <span className="font-medium text-gray-700">🔒 Rekayasa Sosial</span>
+                <span className="font-medium text-gray-700">{'\uD83D\uDD12'} Rekayasa Sosial</span>
                 <span className="text-gray-600">{data.se_score}%</span>
               </div>
               <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
@@ -94,7 +114,7 @@ export default function Result() {
             </div>
             <div>
               <div className="flex justify-between text-sm mb-1">
-                <span className="font-medium text-gray-700">📱 Dampak Konten Negatif</span>
+                <span className="font-medium text-gray-700">{'\uD83D\uDCF1'} Dampak Konten Negatif</span>
                 <span className="text-gray-600">{data.nc_score}%</span>
               </div>
               <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
@@ -106,55 +126,74 @@ export default function Result() {
         </div>
 
         <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <h3 className="font-semibold text-gray-800 mb-2">💡 Rekomendasi</h3>
+          <h3 className="font-semibold text-gray-800 mb-2">{'\uD83D\uDCA1'} Rekomendasi</h3>
           <p className="text-sm text-gray-600 leading-relaxed">{gc.desc}</p>
         </div>
 
         <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <h3 className="font-semibold text-gray-800 mb-3">📜 Sertifikat</h3>
-          <div id="certificate" className="rounded-xl p-6 text-center shadow-sm" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)', border: '3px double #1e3a5f' }}>
-            <div className="border-b-2 border-gray-300 pb-4 mb-4">
-              <p className="text-xs uppercase tracking-widest text-gray-500">Sertifikat Partisipasi</p>
-              <p className="text-lg font-bold text-gray-800 mt-1">Survey Kesadaran Digital</p>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-gray-800">{'\uD83D\uDCDC'} Sertifikat</h3>
+            <button onClick={handleDownload} disabled={downloading}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white text-xs font-medium rounded-lg hover:brightness-90 transition-all disabled:opacity-60">
+              {downloading ? (
+                <><svg className="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> Mendownload...</>
+              ) : (
+                <><span className="material-symbols-outlined text-sm">download</span> Download</>
+              )}
+            </button>
+          </div>
+          <div ref={certRef} className="relative overflow-hidden rounded-xl border-2 border-primary/20" style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)' }}>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -translate-y-1/2 translate-x-1/3" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-500/10 rounded-full translate-y-1/3 -translate-x-1/4" />
+            <div className="relative px-6 py-5 text-center">
+              <div className="mb-3">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/20 mb-2">
+                  <span className="material-symbols-outlined text-primary-fixed text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                </div>
+              </div>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-blue-200/70 font-medium">Sertifikat Partisipasi</p>
+              <p className="text-lg font-bold text-white mt-1">{certTitle}</p>
+              <div className="w-16 h-0.5 bg-primary/50 mx-auto my-3 rounded-full" />
+              <p className="text-xs text-blue-200/60">Diberikan kepada</p>
+              <div className="flex items-center justify-center gap-2 my-2">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-base" style={{ backgroundColor: av.bg }}>
+                  <span role="img" aria-label={av.label}>{av.emoji}</span>
+                </div>
+                <p className="text-xl font-bold text-white">{data.respondent.name}</p>
+              </div>
+              <p className="text-[11px] text-blue-200/60 max-w-xs mx-auto">Telah berpartisipasi dan menyelesaikan asesmen kesadaran keamanan siber yang mencakup pemahaman terhadap ancaman rekayasa sosial serta kemampuan mengidentifikasi dan menyikapi konten negatif di media sosial.</p>
+              <div className="flex justify-center items-center gap-5 my-4">
+                <div className="text-center">
+                  <p className="text-[10px] text-blue-200/50 uppercase tracking-wide">Grade</p>
+                  <p className="text-2xl font-black text-white mt-0.5">{data.grade}</p>
+                </div>
+                <div className="w-px h-10 bg-white/10" />
+                <div className="text-center">
+                  <p className="text-[10px] text-blue-200/50 uppercase tracking-wide">Skor</p>
+                  <p className="text-lg font-bold text-white mt-0.5">{data.total_score}/100</p>
+                </div>
+                <div className="w-px h-10 bg-white/10" />
+                <div className="text-center">
+                  <p className="text-[10px] text-blue-200/50 uppercase tracking-wide">Tanggal</p>
+                  <p className="text-sm font-semibold text-white mt-0.5">{today}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-center gap-1 mt-2">
+                <span className="material-symbols-outlined text-primary-fixed text-sm">shield</span>
+                <span className="text-[10px] text-blue-200/40">Sertifikat diterbitkan oleh SadarSiber.ID</span>
+              </div>
             </div>
-            <p className="text-sm text-gray-600">Diberikan kepada:</p>
-            <div className="flex items-center justify-center gap-2 my-2">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl" style={{ backgroundColor: av.bg }}>
-                <span role="img" aria-label={av.label}>{av.emoji}</span>
-              </div>
-              <p className="text-xl font-bold text-gray-800">{data.respondent.name}</p>
-            </div>
-            <p className="text-xs text-gray-500">Atas partisipasinya dalam mengisi kuesioner kesadaran</p>
-            <p className="text-sm font-medium text-gray-700">Rekayasa Sosial & Dampak Konten Negatif di Media Sosial</p>
-            <div className="flex justify-center items-center gap-6 my-4">
-              <div>
-                <p className="text-xs text-gray-400">Grade</p>
-                <p className="text-2xl font-black text-blue-600">{data.grade}</p>
-              </div>
-              <div className="w-px h-10 bg-gray-300" />
-              <div>
-                <p className="text-xs text-gray-400">Skor</p>
-                <p className="text-xl font-bold text-gray-700">{data.total_score}/100</p>
-              </div>
-              <div className="w-px h-10 bg-gray-300" />
-              <div>
-                <p className="text-xs text-gray-400">Tanggal</p>
-                <p className="text-sm font-semibold text-gray-700">{today}</p>
-              </div>
-            </div>
-            <p className="text-xs text-gray-400 mt-3">Sertifikat ini diterbitkan secara otomatis oleh sistem.</p>
-            <p className="text-xs text-gray-400">{data.respondent.institution || 'Peserta Survey Kesadaran Digital'}</p>
           </div>
         </div>
 
         <div className="flex gap-3 pb-8">
           <Link to="/"
             className="flex-1 text-center py-3 bg-white border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition text-sm">
-            ← Kembali ke Beranda
+            {'\u2190'} Kembali ke Beranda
           </Link>
           <span
             className="flex-1 text-center py-3 bg-gray-100 text-gray-500 font-medium rounded-xl text-sm opacity-50">
-            ✅ Sudah dikerjakan
+            {'\u2705'} Sudah dikerjakan
           </span>
         </div>
       </div>

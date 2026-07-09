@@ -228,11 +228,8 @@ export default function Survey() {
                 <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
                   <span className="material-symbols-outlined text-primary text-base">smart_toy</span>
                 </div>
-                <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-sm px-4 py-3 text-sm text-gray-700 shadow-sm leading-relaxed">
-                  {msg.text.split('\n').map((line, j) => (
-                    <span key={j}>{line}<br /></span>
-                  ))}
-                </div>
+                <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-sm px-4 py-3 text-sm text-gray-700 shadow-sm leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: msg.text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>') }} />
               </div>
             </div>
           ) : (
@@ -261,9 +258,9 @@ export default function Survey() {
                 const label = currentQ[`scale_${s}`]
                 return (
                   <button key={s} onClick={() => handleAnswer(s)}
-                    className={`flex flex-col items-center justify-center rounded-xl border-2 h-[72px] text-sm font-medium transition-all active:scale-95 ${scoreBtn[s]}`}>
-                    <span className={`text-lg font-bold ${s === 4 ? 'text-white' : ''}`}>{s}</span>
-                    <span className={`text-[9px] leading-tight mt-0.5 px-1 text-center line-clamp-2 ${s === 4 ? 'text-white/90' : ''}`}>{label}</span>
+                    className={`flex flex-col items-center justify-center rounded-xl border-2 h-[88px] text-sm font-medium transition-all active:scale-95 ${scoreBtn[s]}`}>
+                    <span className={`text-base font-bold ${s === 4 ? 'text-white' : ''}`}>{s}</span>
+                    <span className={`text-[8px] leading-snug mt-0.5 px-1 text-center ${s === 4 ? 'text-white/90' : ''}`}>{label}</span>
                   </button>
                 )
               })}

@@ -174,6 +174,12 @@ def get_result(session_id: str):
     if not sess: raise HTTPException(404, "Session tidak ditemukan")
     result = calculate_assessment(sess["respondent_id"])
     if not result: raise HTTPException(400, "Belum ada hasil assessment")
+    session_info = None
+    if result["respondent"].get("session_id"):
+        s = get_session_by_id(result["respondent"]["session_id"])
+        if s:
+            session_info = {"title": s["title"], "token": s["token"]}
+    result["session"] = session_info
     return result
 
 # ─── User Dashboard ──────────────────────────────────────────────────

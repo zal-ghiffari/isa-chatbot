@@ -219,7 +219,7 @@ export default function Home() {
                 </label>
                 {showToken && (
                   <div className="flex-1 max-w-[180px]">
-                    <input type="text" value={sessionToken} onChange={(e) => setSessionToken(e.target.value.toUpperCase())}
+                    <input type="text" value={sessionToken} onChange={(e) => setSessionToken(e.target.value.toUpperCase())} required
                       className="w-full px-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50/50 focus:bg-white focus:border-primary/30 focus:ring-2 focus:ring-primary/10 outline-none text-xs text-center uppercase tracking-widest font-mono placeholder:text-gray-300 transition-all"
                       placeholder="AB12CD34" maxLength={8} />
                   </div>
