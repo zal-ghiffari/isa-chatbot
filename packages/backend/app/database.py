@@ -1,6 +1,6 @@
 import sqlite3, os, hashlib, uuid
 
-DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "survey.db")
+DB_PATH = os.environ.get("DB_PATH") or os.path.join(os.path.dirname(os.path.dirname(__file__)), "survey.db")
 
 def get_connection():
     conn = sqlite3.connect(DB_PATH)
