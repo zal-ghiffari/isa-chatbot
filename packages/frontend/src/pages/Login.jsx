@@ -71,7 +71,7 @@ export default function Login() {
                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">mail</span>
                 <input type="email" value={loginForm.email} onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
                   className="w-full pl-10 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none"
-                  placeholder="admin@example.com" required />
+                  placeholder="email@anda.com" required />
               </div>
             </div>
             <div>
@@ -97,7 +97,7 @@ export default function Login() {
                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">person</span>
                 <input type="text" value={regForm.name} onChange={(e) => setRegForm({ ...regForm, name: e.target.value })}
                   className="w-full pl-10 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none"
-                  placeholder="Jane Doe" required />
+                  placeholder="Nama Lengkap" required />
               </div>
             </div>
             <div>
@@ -106,7 +106,7 @@ export default function Login() {
                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">mail</span>
                 <input type="email" value={regForm.email} onChange={(e) => setRegForm({ ...regForm, email: e.target.value })}
                   className="w-full pl-10 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none"
-                  placeholder="jane@company.com" required />
+                  placeholder="email@anda.com" required />
               </div>
             </div>
             <div>

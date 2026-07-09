@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import html2canvas from 'html2canvas'
 import { getResult } from '../api/client'
-import { getAvatarById } from '../data/avatars'
 
 const gradeColors = {
   A: { bg: 'from-emerald-600 to-green-600', label: 'Sangat Baik (Expert)', desc: 'Pemahaman Anda sangat baik! Anda memiliki kesadaran komprehensif tentang keamanan informasi dan dampak konten negatif. Anda siap menjadi agen literasi digital.' },
@@ -43,7 +42,7 @@ export default function Result() {
     try {
       const canvas = await html2canvas(certRef.current, {
         scale: 2,
-        backgroundColor: null,
+        backgroundColor: '#1e293b',
         useCORS: true,
       })
       const link = document.createElement('a')
@@ -76,7 +75,6 @@ export default function Result() {
     )
   }
 
-  const av = getAvatarById(data.respondent.avatar)
   const gc = gradeColors[data.grade] || gradeColors.D
   const today = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })
   const certTitle = data.session?.title || 'SadarSiber.ID'
@@ -155,12 +153,7 @@ export default function Result() {
               <p className="text-lg font-bold text-white mt-1">{certTitle}</p>
               <div className="w-16 h-0.5 bg-primary/50 mx-auto my-3 rounded-full" />
               <p className="text-xs text-blue-200/60">Diberikan kepada</p>
-              <div className="flex items-center justify-center gap-2 my-2">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-base" style={{ backgroundColor: av.bg }}>
-                  <span role="img" aria-label={av.label}>{av.emoji}</span>
-                </div>
-                <p className="text-xl font-bold text-white">{data.respondent.name}</p>
-              </div>
+              <p className="text-xl font-bold text-white my-2">{data.respondent.name}</p>
               <p className="text-[11px] text-blue-200/60 max-w-xs mx-auto">Telah berpartisipasi dan menyelesaikan asesmen kesadaran keamanan siber yang mencakup pemahaman terhadap ancaman rekayasa sosial serta kemampuan mengidentifikasi dan menyikapi konten negatif di media sosial.</p>
               <div className="flex justify-center items-center gap-5 my-4">
                 <div className="text-center">

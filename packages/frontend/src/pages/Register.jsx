@@ -58,7 +58,7 @@ export default function Register() {
               <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
               <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-sm"
-                placeholder="email@contoh.com" />
+                placeholder="email@anda.com" />
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Password</label>

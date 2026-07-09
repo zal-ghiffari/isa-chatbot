@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import html2canvas from 'html2canvas'
 import { getRespondentDetail } from '../../api/client'
 import { getAvatarById } from '../../data/avatars'
 
@@ -15,8 +16,10 @@ const topicStyle = {
 }
 
 export default function RespondentModal({ respondentId, onClose }) {
+  const certRef = useRef(null)
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [downloading, setDownloading] = useState(false)
 
   useEffect(() => {
     ;(async () => {
@@ -132,40 +135,63 @@ export default function RespondentModal({ respondentId, onClose }) {
             </div>
 
             {data.assessment && (
-              <div className="relative overflow-hidden rounded-xl border-2 border-primary/20" style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)' }}>
-                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -translate-y-1/2 translate-x-1/3" />
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-500/10 rounded-full translate-y-1/3 -translate-x-1/4" />
-                <div className="relative px-6 py-5 text-center">
-                  <div className="mb-3">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/20 mb-2">
-                      <span className="material-symbols-outlined text-primary-fixed text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+              <div>
+                <div className="flex items-center justify-end mb-2">
+                  <button onClick={async () => {
+                    if (!certRef.current) return
+                    setDownloading(true)
+                    try {
+                      const canvas = await html2canvas(certRef.current, { scale: 2, backgroundColor: '#1e293b', useCORS: true })
+                      const link = document.createElement('a')
+                      link.download = `sertifikat-sadarsiber-${data.respondent.name.toLowerCase().replace(/\s+/g, '-')}.png`
+                      link.href = canvas.toDataURL()
+                      link.click()
+                    } catch {}
+                    setDownloading(false)
+                  }} disabled={downloading}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white text-xs font-medium rounded-lg hover:brightness-90 transition-all disabled:opacity-60">
+                    {downloading ? (
+                      <><svg className="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> Download</>
+                    ) : (
+                      <><span className="material-symbols-outlined text-sm">download</span> Download</>
+                    )}
+                  </button>
+                </div>
+                <div ref={certRef} className="relative overflow-hidden rounded-xl border-2 border-primary/20" style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)' }}>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -translate-y-1/2 translate-x-1/3" />
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-500/10 rounded-full translate-y-1/3 -translate-x-1/4" />
+                  <div className="relative px-6 py-5 text-center">
+                    <div className="mb-3">
+                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/20 mb-2">
+                        <span className="material-symbols-outlined text-primary-fixed text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                      </div>
                     </div>
-                  </div>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-blue-200/70 font-medium">Sertifikat Partisipasi</p>
-                  <p className="text-lg font-bold text-white mt-1">SadarSiber.ID</p>
-                  <div className="w-16 h-0.5 bg-primary/50 mx-auto my-3 rounded-full" />
-                  <p className="text-xs text-blue-200/60">Diberikan kepada</p>
-                  <p className="text-xl font-bold text-white my-2">{data.respondent.name}</p>
-                  <p className="text-[11px] text-blue-200/60 max-w-xs mx-auto">Atas partisipasi dalam asesmen kesadaran keamanan siber</p>
-                  <div className="flex justify-center items-center gap-5 my-4">
-                    <div className="text-center">
-                      <p className="text-[10px] text-blue-200/50 uppercase tracking-wide">Grade</p>
-                      <p className="text-2xl font-black text-white mt-0.5">{data.assessment.grade}</p>
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-blue-200/70 font-medium">Sertifikat Partisipasi</p>
+                    <p className="text-lg font-bold text-white mt-1">SadarSiber.ID</p>
+                    <div className="w-16 h-0.5 bg-primary/50 mx-auto my-3 rounded-full" />
+                    <p className="text-xs text-blue-200/60">Diberikan kepada</p>
+                    <p className="text-xl font-bold text-white my-2">{data.respondent.name}</p>
+                    <p className="text-[11px] text-blue-200/60 max-w-xs mx-auto">Telah berpartisipasi dan menyelesaikan asesmen kesadaran keamanan siber yang mencakup pemahaman terhadap ancaman rekayasa sosial serta kemampuan mengidentifikasi dan menyikapi konten negatif di media sosial.</p>
+                    <div className="flex justify-center items-center gap-5 my-4">
+                      <div className="text-center">
+                        <p className="text-[10px] text-blue-200/50 uppercase tracking-wide">Grade</p>
+                        <p className="text-2xl font-black text-white mt-0.5">{data.assessment.grade}</p>
+                      </div>
+                      <div className="w-px h-10 bg-white/10" />
+                      <div className="text-center">
+                        <p className="text-[10px] text-blue-200/50 uppercase tracking-wide">Skor</p>
+                        <p className="text-lg font-bold text-white mt-0.5">{data.assessment.total_score}/100</p>
+                      </div>
+                      <div className="w-px h-10 bg-white/10" />
+                      <div className="text-center">
+                        <p className="text-[10px] text-blue-200/50 uppercase tracking-wide">Tanggal</p>
+                        <p className="text-sm font-semibold text-white mt-0.5">{data.assessment.completed_at}</p>
+                      </div>
                     </div>
-                    <div className="w-px h-10 bg-white/10" />
-                    <div className="text-center">
-                      <p className="text-[10px] text-blue-200/50 uppercase tracking-wide">Skor</p>
-                      <p className="text-lg font-bold text-white mt-0.5">{data.assessment.total_score}/100</p>
+                    <div className="flex items-center justify-center gap-1 mt-2">
+                      <span className="material-symbols-outlined text-primary-fixed text-sm">shield</span>
+                      <span className="text-[10px] text-blue-200/40">Sertifikat diterbitkan oleh SadarSiber.ID</span>
                     </div>
-                    <div className="w-px h-10 bg-white/10" />
-                    <div className="text-center">
-                      <p className="text-[10px] text-blue-200/50 uppercase tracking-wide">Tanggal</p>
-                      <p className="text-sm font-semibold text-white mt-0.5">{data.assessment.completed_at}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-center gap-1 mt-2">
-                    <span className="material-symbols-outlined text-primary-fixed text-sm">shield</span>
-                    <span className="text-[10px] text-blue-200/40">SadarSiber.ID Cybersecurity Assessment</span>
                   </div>
                 </div>
               </div>
